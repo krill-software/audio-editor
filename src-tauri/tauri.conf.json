@@ -58,7 +58,7 @@
       "icons/128x128@2x.png",
       "icons/icon.png"
     ],
-    "category": "AudioVideo",
+    "category": "Music",
     "shortDescription": "Audio editor",
     "longDescription": "A minimal, single-file audio editor for Linux. Open a WAV, view its waveform, play it, edit it, save it.",
     "fileAssociations": [
