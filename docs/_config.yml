@@ -1,0 +1,8 @@
+remote_theme: krill-software/docs-theme@v4.0
+plugins:
+  - jekyll-remote-theme
+
+title: Audio Editor
+slug: audio-editor
+brand: audio-editor
+version: 0.1.0

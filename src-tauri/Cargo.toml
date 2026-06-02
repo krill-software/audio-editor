@@ -1,0 +1,36 @@
+[package]
+name = "krill-audio-editor"
+version = "0.1.0"
+description = "A minimal audio editor for Linux"
+authors = ["Filip"]
+edition = "2021"
+rust-version = "1.77"
+license = "MIT"
+
+[lib]
+name = "krill_audio_editor_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-dialog = "2"
+tauri-plugin-cli = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-updater = "2"
+tauri-plugin-process = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+krill-desktop-core = { git = "https://github.com/krill-software/desktop-core", tag = "v0.2.0" }
+hound = "3.5"
+rodio = { version = "0.19", default-features = false, features = ["wav"] }
+cpal = "0.15"
+
+[profile.release]
+panic = "abort"
+codegen-units = 1
+lto = true
+opt-level = "s"
+strip = true

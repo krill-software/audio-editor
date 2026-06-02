@@ -1,0 +1,86 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "Audio Editor",
+  "version": "0.1.0",
+  "identifier": "software.krill.audio-editor",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:1430",
+    "beforeBuildCommand": "pnpm build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "Audio Editor",
+        "width": 1296,
+        "height": 800,
+        "minWidth": 720,
+        "minHeight": 445,
+        "decorations": false,
+        "resizable": true,
+        "center": true,
+        "backgroundColor": "#FAFAFF"
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "plugins": {
+    "cli": {
+      "description": "A minimal audio editor for Linux",
+      "args": [
+        {
+          "name": "file",
+          "index": 1,
+          "takesValue": true,
+          "description": "Path to a WAV file to open"
+        }
+      ]
+    },
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDg3Nzg5QTc4MEExOTM4MjIKUldRaU9Ca0tlSnA0aDQzcXJLRWtKWTI0K0lDM3IwTW4wcGUzdFZ5RE01ckYraU5nL1FRZWRXRmgK",
+      "endpoints": [
+        "https://github.com/krill-software/audio-editor/releases/latest/download/latest.json"
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "deb",
+      "appimage"
+    ],
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.png"
+    ],
+    "category": "AudioVideo",
+    "shortDescription": "Audio editor",
+    "longDescription": "A minimal, single-file audio editor for Linux. Open a WAV, view its waveform, play it, edit it, save it.",
+    "fileAssociations": [
+      {
+        "ext": [
+          "wav"
+        ],
+        "name": "WAV",
+        "description": "WAV audio file",
+        "mimeType": "audio/wav",
+        "role": "Editor"
+      }
+    ],
+    "linux": {
+      "deb": {
+        "section": "sound",
+        "priority": "optional",
+        "desktopTemplate": "main.desktop"
+      },
+      "appimage": {
+        "bundleMediaFramework": false
+      }
+    }
+  }
+}

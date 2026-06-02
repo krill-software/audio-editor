@@ -1,0 +1,241 @@
+---
+layout: app
+tagline: a calm single-file WAV editor for Linux
+description: A minimal Linux audio editor. Open a WAV, record from the mic, drag-select, trim/cut/silence, save. Recording is a verb inside the editor — no separate app, no project tree.
+og_description: A calm single-file WAV editor for Linux. Free and open source.
+eyebrow: An audio editor for Linux
+heading: "Trim it, <em>save</em> it."
+lede: Open a WAV, see the waveform, drag-select a region, cut or trim or silence it, save. Or hit R to record a fresh one from the mic — when you press stop you're already in the editor with the result.
+features_heading: One file. The 80% of audio work.
+features:
+  - tag: Record
+    title: Recording is a verb here
+    blurb: Press R, talk, press R again. The buffer is already in the editor when you stop — no separate "recorder" app, no project, no save dialog before you can edit.
+  - tag: Edit
+    title: Drag-select, cut, trim, silence
+    blurb: Drag on the waveform to select a region. Shift-click extends. Cut removes it; Trim keeps only it; Silence replaces it with zeros. Ten levels of undo via Ctrl+Z.
+  - tag: WAV in / WAV out
+    title: No codec licensing surface
+    blurb: PCM WAV, any rate, any bit depth (int 8/16/24/32 or float). Save preserves the source rate and depth. Recordings land at the input device's negotiated rate / 24-bit signed.
+  - tag: Scroll to zoom
+    title: Full view by default
+    blurb: Mouse-wheel zooms around the cursor frame. Fully zoomed out you see the whole track; zoomed in you can place the playhead with sample precision.
+  - tag: Quiet chrome
+    title: Wave first, controls second
+    blurb: A skinny pill of transport buttons under the waveform. Rail on the left for capture and edit actions. No status bar; no settings panel; no dark-mode toggle.
+  - tag: Tauri · Rust
+    title: Native Linux
+    blurb: cpal for capture, rodio for playback, hound for WAV I/O. AppImage and .deb. No Electron.
+extension: ".wav"
+mock:
+  filename: "recording.wav"
+  state: '0:23.140 / 1:47.500'
+---
+<style>
+  .ae-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    min-height: 320px;
+  }
+  .ae-aux {
+    background: rgba(48, 52, 63, 0.03);
+    border-right: 1px solid var(--rule);
+    padding: 20px 16px;
+    font-family: var(--mono);
+    font-size: 12px;
+  }
+  .ae-aux .ae-block { margin-bottom: 16px; }
+  .ae-aux .ae-header {
+    font-size: 11px;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+  .ae-aux .ae-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 8px;
+    margin-bottom: 4px;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    color: var(--ink);
+  }
+  .ae-aux .ae-btn svg {
+    width: 12px;
+    height: 12px;
+    color: var(--muted);
+  }
+  .ae-main {
+    display: flex;
+    flex-direction: column;
+    padding: 20px 28px 16px;
+  }
+  .ae-wave {
+    flex: 1;
+    position: relative;
+    background: var(--bg);
+    border-radius: 6px;
+    min-height: 160px;
+    margin-bottom: 16px;
+  }
+  .ae-wave svg { width: 100%; height: 100%; display: block; }
+  .ae-selection {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 38%; width: 18%;
+    background: rgba(221, 117, 150, 0.18);
+    border-left: 1px solid var(--accent);
+    border-right: 1px solid var(--accent);
+  }
+  .ae-playhead {
+    position: absolute;
+    top: 0; bottom: 0;
+    left: 48%;
+    width: 1px;
+    background: var(--accent);
+  }
+  .ae-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .ae-controls-row {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .ae-control-btn {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    color: var(--muted);
+  }
+  .ae-control-btn svg { width: 14px; height: 14px; }
+  .ae-control-btn.ae-play {
+    width: 42px;
+    height: 42px;
+    background: var(--ink);
+    color: var(--bg);
+  }
+  .ae-time {
+    color: var(--muted);
+    font-family: var(--mono);
+    font-size: 11px;
+  }
+</style>
+<div class="ae-grid">
+  <nav class="ae-aux">
+    <div class="ae-block">
+      <div class="ae-header">Capture</div>
+      <div class="ae-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v4"/><path d="M8 23h8"/></svg>
+        Record
+      </div>
+      <div class="ae-btn">
+        <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="2.5" y="2.5" width="7" height="7"/></svg>
+        Stop recording
+      </div>
+    </div>
+    <div class="ae-block">
+      <div class="ae-header">Edit</div>
+      <div class="ae-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><line x1="20" y1="4" x2="8.12" y2="15.88"/><line x1="14.47" y1="14.48" x2="20" y2="20"/><line x1="8.12" y1="8.12" x2="12" y2="12"/></svg>
+        Cut
+      </div>
+      <div class="ae-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2v14a2 2 0 0 0 2 2h14"/><path d="M18 22V8a2 2 0 0 0-2-2H2"/></svg>
+        Trim
+      </div>
+      <div class="ae-btn">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="22" y1="9" x2="16" y2="15"/><line x1="16" y1="9" x2="22" y2="15"/></svg>
+        Silence
+      </div>
+    </div>
+  </nav>
+  <div class="ae-main">
+    <div class="ae-wave">
+      <svg viewBox="0 0 600 160" preserveAspectRatio="none">
+        <g stroke="#30343F" stroke-width="1" stroke-linecap="round">
+          <line x1="10" y1="80" x2="10" y2="80"/>
+          <line x1="20" y1="72" x2="20" y2="88"/>
+          <line x1="30" y1="60" x2="30" y2="100"/>
+          <line x1="40" y1="50" x2="40" y2="110"/>
+          <line x1="50" y1="45" x2="50" y2="115"/>
+          <line x1="60" y1="55" x2="60" y2="105"/>
+          <line x1="70" y1="70" x2="70" y2="90"/>
+          <line x1="80" y1="76" x2="80" y2="84"/>
+          <line x1="90" y1="68" x2="90" y2="92"/>
+          <line x1="100" y1="58" x2="100" y2="102"/>
+          <line x1="110" y1="50" x2="110" y2="110"/>
+          <line x1="120" y1="42" x2="120" y2="118"/>
+          <line x1="130" y1="38" x2="130" y2="122"/>
+          <line x1="140" y1="44" x2="140" y2="116"/>
+          <line x1="150" y1="56" x2="150" y2="104"/>
+          <line x1="160" y1="64" x2="160" y2="96"/>
+          <line x1="170" y1="60" x2="170" y2="100"/>
+          <line x1="180" y1="48" x2="180" y2="112"/>
+          <line x1="190" y1="40" x2="190" y2="120"/>
+          <line x1="200" y1="36" x2="200" y2="124"/>
+          <line x1="210" y1="32" x2="210" y2="128"/>
+          <line x1="220" y1="36" x2="220" y2="124"/>
+          <line x1="230" y1="46" x2="230" y2="114"/>
+          <line x1="240" y1="60" x2="240" y2="100"/>
+          <line x1="250" y1="72" x2="250" y2="88"/>
+          <line x1="260" y1="65" x2="260" y2="95"/>
+          <line x1="270" y1="58" x2="270" y2="102"/>
+          <line x1="280" y1="50" x2="280" y2="110"/>
+          <line x1="290" y1="48" x2="290" y2="112"/>
+          <line x1="300" y1="56" x2="300" y2="104"/>
+          <line x1="310" y1="64" x2="310" y2="96"/>
+          <line x1="320" y1="72" x2="320" y2="88"/>
+          <line x1="330" y1="68" x2="330" y2="92"/>
+          <line x1="340" y1="58" x2="340" y2="102"/>
+          <line x1="350" y1="50" x2="350" y2="110"/>
+          <line x1="360" y1="46" x2="360" y2="114"/>
+          <line x1="370" y1="52" x2="370" y2="108"/>
+          <line x1="380" y1="62" x2="380" y2="98"/>
+          <line x1="390" y1="70" x2="390" y2="90"/>
+          <line x1="400" y1="74" x2="400" y2="86"/>
+          <line x1="410" y1="68" x2="410" y2="92"/>
+          <line x1="420" y1="58" x2="420" y2="102"/>
+          <line x1="430" y1="48" x2="430" y2="112"/>
+          <line x1="440" y1="44" x2="440" y2="116"/>
+          <line x1="450" y1="50" x2="450" y2="110"/>
+          <line x1="460" y1="60" x2="460" y2="100"/>
+          <line x1="470" y1="68" x2="470" y2="92"/>
+          <line x1="480" y1="72" x2="480" y2="88"/>
+          <line x1="490" y1="68" x2="490" y2="92"/>
+          <line x1="500" y1="60" x2="500" y2="100"/>
+          <line x1="510" y1="68" x2="510" y2="92"/>
+          <line x1="520" y1="74" x2="520" y2="86"/>
+          <line x1="530" y1="76" x2="530" y2="84"/>
+          <line x1="540" y1="72" x2="540" y2="88"/>
+          <line x1="550" y1="68" x2="550" y2="92"/>
+          <line x1="560" y1="74" x2="560" y2="86"/>
+          <line x1="570" y1="78" x2="570" y2="82"/>
+          <line x1="580" y1="79" x2="580" y2="81"/>
+          <line x1="590" y1="80" x2="590" y2="80"/>
+        </g>
+        <line x1="0" y1="80" x2="600" y2="80" stroke="rgba(48,52,63,0.16)" stroke-width="0.5"/>
+      </svg>
+      <div class="ae-selection"></div>
+      <div class="ae-playhead"></div>
+    </div>
+    <div class="ae-controls">
+      <div class="ae-controls-row">
+        <div class="ae-control-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="19 20 9 12 19 4 19 20"/><line x1="5" y1="19" x2="5" y2="5"/></svg></div>
+        <div class="ae-control-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg></div>
+        <div class="ae-control-btn ae-play"><svg viewBox="0 0 24 24" fill="currentColor"><polygon points="6 4 20 12 6 20 6 4"/></svg></div>
+        <div class="ae-control-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
+        <div class="ae-control-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></div>
+      </div>
+      <div class="ae-time">0:23.140 / 1:47.500</div>
+    </div>
+  </div>
+</div>
