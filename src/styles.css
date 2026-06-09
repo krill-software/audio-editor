@@ -1,9 +1,17 @@
-/* audio-editor — app-specific styles. Body grid, palette, chrome,
- * status-line halves, and dirty marker all come from
- * @krill-software/desktop-ui via the imported styles bundle. */
+/* audio-editor — app-specific styles. Body grid, palette, chrome
+ * (in-viewport top strip, aux hamburger menu), and the app-layout
+ * shell all come from @krill-software/desktop-ui via the imported
+ * styles bundle and mountChrome({ layout: "app" }). Only this app's
+ * own surfaces (waveform, transport, rail, recording overlay) live
+ * here. */
 
 :root {
-  --fm-selection: rgba(221, 117, 150, 0.22); /* alpha-derived from --fm-accent */
+  --fm-selection: rgba(
+    221,
+    117,
+    150,
+    0.22
+  ); /* alpha-derived from --fm-accent */
 }
 
 ::selection {
@@ -11,19 +19,21 @@
   text-shadow: none;
 }
 
-html, body {
+html,
+body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  font-feature-settings: "calt" 1, "liga" 1;
+  font-feature-settings:
+    "calt" 1,
+    "liga" 1;
 }
 
-/* Shell-app chrome ================================================= */
-
-#titlebar, #status-line { display: none; }
+/* App-layout overrides ============================================
+ * Chrome (in-viewport top strip, aux hamburger menu, no titlebar /
+ * status line) comes from desktop-ui via mountChrome({ layout: "app" }).
+ * Only audio-editor's own surfaces live below. */
 
 #viewport {
-  display: flex;
-  flex-direction: column;
   position: relative;
   background: var(--fm-bg);
   overflow: hidden;
@@ -37,98 +47,11 @@ html, body {
   flex-direction: column;
 }
 
-/* Subtle aux pane tint and shared shell topbar buttons mirror the
- * other shell apps. */
+/* Subtle aux pane tint — main stays pure Ghost White. */
 #aux {
   background: rgba(48, 52, 63, 0.03);
   border-right: 0;
-  display: flex;
-  flex-direction: column;
   padding: 0;
-}
-
-.main-topbar {
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  gap: 9px;
-  height: 44px;
-  padding: 0 16px;
-  flex-shrink: 0;
-  background: var(--fm-bg);
-}
-.main-topbar-btn {
-  width: 22px;
-  height: 22px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border: none;
-  background: transparent;
-  color: var(--fm-muted);
-  border-radius: 4px;
-  cursor: pointer;
-  padding: 0;
-  transition: background-color 100ms ease, color 100ms ease;
-}
-.main-topbar-btn:hover { background: var(--fm-rule); color: var(--fm-text); }
-.main-topbar > .main-topbar-btn[data-kind="close"]:hover {
-  background: #e8a5a5;
-  color: var(--fm-text);
-}
-
-.aux-topbar {
-  position: relative;
-  display: flex;
-  align-items: center;
-  height: 44px;
-  padding: 0 16px;
-  flex-shrink: 0;
-}
-
-/* Hamburger dropdown ---------------------------------------------------- */
-.menu-popover {
-  position: absolute;
-  top: 48px;
-  left: 16px;
-  min-width: 220px;
-  background: var(--fm-bg);
-  border: 1px solid var(--fm-rule-strong);
-  border-radius: 4px;
-  box-shadow: 0 4px 16px rgba(48, 52, 63, 0.16);
-  padding: 4px 0;
-  z-index: 1000;
-}
-.menu-popover-item {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  width: 100%;
-  padding: 6px 12px;
-  border: none;
-  background: transparent;
-  font: inherit;
-  font-size: 13px;
-  color: var(--fm-text);
-  text-align: left;
-  cursor: pointer;
-}
-.menu-popover-item:hover { background: var(--fm-rule); }
-.menu-popover-item[disabled] {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-.menu-popover-item[disabled]:hover { background: transparent; }
-.menu-popover-shortcut {
-  color: var(--fm-muted);
-  font-family: var(--fm-mono);
-  font-size: 11px;
-}
-.menu-popover-sep {
-  height: 1px;
-  background: var(--fm-rule);
-  margin: 4px 0;
 }
 
 #work {
@@ -173,7 +96,9 @@ html, body {
 
 /* Controls — <<10s < ▶ > >>10s + timecode below ------------------------ */
 
-#transport[hidden] { display: none; }
+#transport[hidden] {
+  display: none;
+}
 #transport {
   display: flex;
   flex-direction: column;
@@ -201,7 +126,9 @@ html, body {
   border-radius: 50%;
   color: var(--fm-muted);
   cursor: pointer;
-  transition: background-color 100ms ease, color 100ms ease;
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
 }
 .control-btn:hover {
   background: var(--fm-rule);
@@ -264,10 +191,18 @@ html, body {
   font-size: 12px;
   text-align: left;
   cursor: pointer;
-  transition: background 100ms ease, border-color 100ms ease, color 100ms ease;
+  transition:
+    background 100ms ease,
+    border-color 100ms ease,
+    color 100ms ease;
 }
-.rail-btn svg { color: var(--fm-muted); flex-shrink: 0; }
-.rail-btn:hover:not(:disabled) svg { color: var(--fm-text); }
+.rail-btn svg {
+  color: var(--fm-muted);
+  flex-shrink: 0;
+}
+.rail-btn:hover:not(:disabled) svg {
+  color: var(--fm-text);
+}
 .rail-btn:hover:not(:disabled) {
   background: var(--fm-rule);
   border-color: var(--fm-rule-strong);
@@ -295,7 +230,9 @@ html, body {
  * selector is intentional: a bare `display: flex` would override the
  * HTML `hidden` attribute (which the JS toggles), making the overlay
  * visible from boot. Gate the layout on the attribute. */
-#rec-overlay[hidden] { display: none; }
+#rec-overlay[hidden] {
+  display: none;
+}
 #rec-overlay:not([hidden]) {
   position: absolute;
   inset: 0;
@@ -333,13 +270,17 @@ html, body {
   transition: width 60ms linear;
 }
 #rec-meter-fill[data-hot="true"] {
-  background: #c7415a;
+  /* Brilliant Rose — the strong accent reads "hot" against the
+   * Shimmering Blush of the normal fill. On-palette. */
+  background: var(--fm-accent-strong);
 }
 
 /* When no file open / errored, hide the work surface so the empty / error
  * placeholders (package-styled, absolutely positioned over #viewport) read. */
-body:not([data-state="audio"]) #work { display: none; }
+body:not([data-state="audio"]) #work {
+  display: none;
+}
 
 .mono {
-  font-family: var(--fm-mono, ui-monospace, monospace);
+  font-family: var(--fm-mono);
 }

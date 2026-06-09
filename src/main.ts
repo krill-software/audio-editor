@@ -5,7 +5,6 @@ import {
   buildEmptyState,
   buildErrorState,
   showBootError,
-  checkForUpdates,
   type ErrorStateRefs,
 } from "@krill-software/desktop-ui";
 
@@ -35,7 +34,6 @@ interface AppState {
 // ---- DOM refs --------------------------------------------------------
 
 let titleEl: HTMLElement;
-let viewportEl: HTMLElement;
 let railEl: HTMLElement;
 let mainContentEl: HTMLDivElement;
 let emptyEl: HTMLElement;
@@ -644,11 +642,11 @@ async function saveAs(): Promise<void> {
 // ---- Rail -----------------------------------------------------------
 
 function buildRail() {
-  // Preserve the aux-topbar that initChrome put at the top; only swap
-  // out the content below it.
-  const topbar = railEl.querySelector(".aux-topbar");
+  // The aux strip (hamburger) is owned by desktop-ui's app layout — keep
+  // it and re-render only the rail content below it.
+  const strip = railEl.querySelector(".aux-topbar");
   railEl.replaceChildren();
-  if (topbar) railEl.appendChild(topbar);
+  if (strip) railEl.append(strip);
 
   // Capture
   const cap = railBlock("Capture");
@@ -724,22 +722,25 @@ function refreshRailState(): void {
 function initChrome() {
   const chrome = mountChrome({
     productName: "Audio Editor",
-    actions: {},
+    version: __APP_VERSION__,
+    layout: "app",
+    actions: {
+      open: () => void openViaDialog(),
+      save: () => void save(),
+      "save-as": () => void saveAs(),
+      undo: () => void undoEdit(),
+    },
     showAuxPane: true,
-    showStatusLine: false,
     updater: true,
   });
   titleEl = chrome.title; // hidden via CSS but still useful for tests
-  viewportEl = chrome.viewport;
   railEl = chrome.aux!;
   railEl.setAttribute("aria-label", "Tools");
 
-  // Shell-app layout: main pane gets its own topbar (drag + window
-  // controls). Below that is the scrollable content area renderers
-  // swap. desktop-ui's #titlebar + #status-line are hidden via CSS.
-  const mainTopbar = buildMainTopbar();
-  mainContentEl = document.createElement("div");
-  mainContentEl.className = "main-content";
+  // App layout: desktop-ui provides the main pane's top strip (drag +
+  // window controls) and the aux hamburger menu. Renderers swap the
+  // children of the scrollable content area it hands back.
+  mainContentEl = chrome.mainContent as HTMLDivElement;
 
   // Work area: waveform + controls stacked vertically.
   workEl = document.createElement("div");
@@ -783,116 +784,12 @@ function initChrome() {
   errorState.element.hidden = true;
   mainContentEl.appendChild(errorState.element);
 
-  viewportEl.replaceChildren(mainTopbar, mainContentEl);
-
-  // Aux pane: topbar (hamburger) + rail content.
-  railEl.replaceChildren();
-  railEl.appendChild(buildAuxTopbar());
+  // Aux pane: desktop-ui owns the aux strip (hamburger); build the
+  // rail content below it.
   buildRail();
 
   document.body.dataset.state = "empty";
   document.body.dataset.aux = "visible";
-}
-
-// ---- Shell topbars + hamburger --------------------------------------
-
-function buildMainTopbar(): HTMLElement {
-  const bar = document.createElement("div");
-  bar.className = "main-topbar";
-  bar.setAttribute("data-tauri-drag-region", "true");
-  const min = document.createElement("button");
-  min.className = "main-topbar-btn";
-  min.type = "button";
-  min.title = "Minimize";
-  min.append(svgIcon("minus", 14));
-  min.addEventListener("click", () => { void getCurrentWindow().minimize(); });
-  const max = document.createElement("button");
-  max.className = "main-topbar-btn";
-  max.type = "button";
-  max.title = "Maximize";
-  max.append(svgIcon("square", 12));
-  max.addEventListener("click", () => { void getCurrentWindow().toggleMaximize(); });
-  const close = document.createElement("button");
-  close.className = "main-topbar-btn";
-  close.type = "button";
-  close.title = "Close";
-  close.setAttribute("data-kind", "close");
-  close.append(svgIcon("x", 14));
-  close.addEventListener("click", () => { void getCurrentWindow().close(); });
-  bar.append(min, max, close);
-  return bar;
-}
-
-function buildAuxTopbar(): HTMLElement {
-  const bar = document.createElement("div");
-  bar.className = "aux-topbar";
-  bar.setAttribute("data-tauri-drag-region", "true");
-  const hamburger = document.createElement("button");
-  hamburger.className = "main-topbar-btn";
-  hamburger.type = "button";
-  hamburger.title = "Menu";
-  hamburger.append(svgIcon("menu", 16));
-  hamburger.addEventListener("click", (e) => {
-    e.stopPropagation();
-    toggleHamburgerMenu(bar);
-  });
-  bar.appendChild(hamburger);
-  return bar;
-}
-
-function toggleHamburgerMenu(anchor: HTMLElement): void {
-  const existing = document.querySelector(".menu-popover");
-  if (existing) { existing.remove(); return; }
-  const pop = document.createElement("div");
-  pop.className = "menu-popover";
-  const items: Array<{ label: string; shortcut?: string; action: () => void; enabled?: () => boolean } | { sep: true }> = [
-    { label: "Open…",   shortcut: "Ctrl+O",       action: () => void openViaDialog() },
-    { sep: true },
-    { label: "Save",    shortcut: "Ctrl+S",       action: () => void save(),   enabled: () => current !== null && !recording },
-    { label: "Save as…", shortcut: "Ctrl+Shift+S", action: () => void saveAs(), enabled: () => current !== null && !recording },
-    { sep: true },
-    { label: "Undo",    shortcut: "Ctrl+Z",       action: () => void undoEdit(), enabled: () => current !== null && !recording },
-    { sep: true },
-    { label: "Check for updates…", action: () => void checkForUpdates("Audio Editor") },
-    { label: "Quit",    shortcut: "Ctrl+Q",       action: () => void getCurrentWindow().close() },
-  ];
-  for (const it of items) {
-    if ("sep" in it) {
-      const s = document.createElement("div");
-      s.className = "menu-popover-sep";
-      pop.appendChild(s);
-      continue;
-    }
-    const btn = document.createElement("button");
-    btn.className = "menu-popover-item";
-    btn.type = "button";
-    const label = document.createElement("span");
-    label.textContent = it.label;
-    btn.appendChild(label);
-    if (it.shortcut) {
-      const k = document.createElement("span");
-      k.className = "menu-popover-shortcut";
-      k.textContent = it.shortcut;
-      btn.appendChild(k);
-    }
-    if (it.enabled && !it.enabled()) btn.setAttribute("disabled", "");
-    btn.addEventListener("click", () => {
-      if (it.enabled && !it.enabled()) return;
-      pop.remove();
-      it.action();
-    });
-    pop.appendChild(btn);
-  }
-  anchor.parentElement?.appendChild(pop);
-  setTimeout(() => {
-    const handler = (ev: MouseEvent) => {
-      if (!pop.contains(ev.target as Node)) {
-        pop.remove();
-        document.removeEventListener("click", handler);
-      }
-    };
-    document.addEventListener("click", handler);
-  }, 0);
 }
 
 // ---- Controls (<<10s < ▶ > >>10s + timecode) -------------------------

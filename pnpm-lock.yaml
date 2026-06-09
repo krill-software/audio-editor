@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@krill-software/desktop-ui':
-        specifier: github:krill-software/desktop-ui#v0.10.1
-        version: https://codeload.github.com/krill-software/desktop-ui/tar.gz/8cf91250f5a86bc1f66fc2d0d9be287dce5a4a5d(@tauri-apps/api@2.11.0)(@tauri-apps/plugin-dialog@2.7.1)(@tauri-apps/plugin-process@2.3.1)(@tauri-apps/plugin-updater@2.10.1)
+        specifier: github:krill-software/desktop-ui#v0.11.1
+        version: https://codeload.github.com/krill-software/desktop-ui/tar.gz/b20da6d3b44903cd91f1ae83714e45dea6728440(@tauri-apps/api@2.11.0)(@tauri-apps/plugin-dialog@2.7.1)(@tauri-apps/plugin-process@2.3.1)(@tauri-apps/plugin-updater@2.10.1)
       '@tauri-apps/api':
         specifier: ^2.1.1
         version: 2.11.0
@@ -180,9 +180,9 @@ packages:
     cpu: [x64]
     os: [win32]
 
-  '@krill-software/desktop-ui@https://codeload.github.com/krill-software/desktop-ui/tar.gz/8cf91250f5a86bc1f66fc2d0d9be287dce5a4a5d':
-    resolution: {tarball: https://codeload.github.com/krill-software/desktop-ui/tar.gz/8cf91250f5a86bc1f66fc2d0d9be287dce5a4a5d}
-    version: 0.10.1
+  '@krill-software/desktop-ui@https://codeload.github.com/krill-software/desktop-ui/tar.gz/b20da6d3b44903cd91f1ae83714e45dea6728440':
+    resolution: {tarball: https://codeload.github.com/krill-software/desktop-ui/tar.gz/b20da6d3b44903cd91f1ae83714e45dea6728440}
+    version: 0.11.1
     peerDependencies:
       '@tauri-apps/api': ^2.0.0
       '@tauri-apps/plugin-dialog': ^2.0.0
@@ -567,7 +567,7 @@ snapshots:
   '@esbuild/win32-x64@0.21.5':
     optional: true
 
-  '@krill-software/desktop-ui@https://codeload.github.com/krill-software/desktop-ui/tar.gz/8cf91250f5a86bc1f66fc2d0d9be287dce5a4a5d(@tauri-apps/api@2.11.0)(@tauri-apps/plugin-dialog@2.7.1)(@tauri-apps/plugin-process@2.3.1)(@tauri-apps/plugin-updater@2.10.1)':
+  '@krill-software/desktop-ui@https://codeload.github.com/krill-software/desktop-ui/tar.gz/b20da6d3b44903cd91f1ae83714e45dea6728440(@tauri-apps/api@2.11.0)(@tauri-apps/plugin-dialog@2.7.1)(@tauri-apps/plugin-process@2.3.1)(@tauri-apps/plugin-updater@2.10.1)':
     dependencies:
       '@tauri-apps/api': 2.11.0
       '@tauri-apps/plugin-dialog': 2.7.1
