@@ -28,8 +28,7 @@ features:
     blurb: cpal for capture, rodio for playback, hound for WAV I/O. AppImage and .deb. No Electron.
 extension: ".wav"
 mock:
-  filename: "recording.wav"
-  state: '0:23.140 / 1:47.500'
+  chrome: app
 ---
 <style>
   .ae-grid {
@@ -44,6 +43,7 @@ mock:
     font-family: var(--mono);
     font-size: 12px;
   }
+  .ae-burger { color: var(--muted); font-size: 14px; padding: 2px 6px 12px; }
   .ae-aux .ae-block { margin-bottom: 16px; }
   .ae-aux .ae-header {
     font-size: 11px;
@@ -71,6 +71,14 @@ mock:
     display: flex;
     flex-direction: column;
     padding: 20px 28px 16px;
+  }
+  .ae-winbtns {
+    align-self: flex-end;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 2px;
+    margin-bottom: 4px;
   }
   .ae-wave {
     flex: 1;
@@ -131,6 +139,7 @@ mock:
 </style>
 <div class="ae-grid">
   <nav class="ae-aux">
+    <div class="ae-burger">☰</div>
     <div class="ae-block">
       <div class="ae-header">Capture</div>
       <div class="ae-btn">
@@ -159,6 +168,7 @@ mock:
     </div>
   </nav>
   <div class="ae-main">
+    <div class="ae-winbtns">─ ▢ ✕</div>
     <div class="ae-wave">
       <svg viewBox="0 0 600 160" preserveAspectRatio="none">
         <g stroke="#30343F" stroke-width="1" stroke-linecap="round">
@@ -235,7 +245,7 @@ mock:
         <div class="ae-control-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg></div>
         <div class="ae-control-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 4 15 12 5 20 5 4"/><line x1="19" y1="5" x2="19" y2="19"/></svg></div>
       </div>
-      <div class="ae-time">0:23.140 / 1:47.500</div>
+      <div class="ae-time">00:23.140 / 01:47.500</div>
     </div>
   </div>
 </div>
