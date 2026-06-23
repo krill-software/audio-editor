@@ -13,7 +13,7 @@
     "release:repackage": "bash scripts/publish.sh --skip-build"
   },
   "dependencies": {
-    "@krill-software/desktop-ui": "github:krill-software/desktop-ui#v0.16.0",
+    "@krill-software/desktop-ui": "github:krill-software/desktop-ui#v0.17.0",
     "@tauri-apps/api": "^2.1.1",
     "@tauri-apps/plugin-cli": "^2.0.0",
     "@tauri-apps/plugin-dialog": "^2.0.1",
