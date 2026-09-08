@@ -3,8 +3,6 @@ layout: app
 tagline: a calm single-file WAV editor for Linux
 description: A minimal Linux audio editor. Open a WAV, record from the mic, drag-select, trim/cut/silence, save. Recording is a verb inside the editor — no separate app, no project tree.
 og_description: A calm single-file WAV editor for Linux. Free and open source.
-eyebrow: An audio editor for Linux
-heading: "Trim it, <em>save</em> it."
 lede: Open a WAV, see the waveform, drag-select a region, cut or trim or silence it, save. Or hit R to record a fresh one from the mic — when you press stop you're already in the editor with the result.
 features_heading: One file. The 80% of audio work.
 features:
@@ -37,7 +35,7 @@ mock:
     min-height: 320px;
   }
   .ae-aux {
-    background: rgba(48, 52, 63, 0.03);
+    background: rgba(var(--ink-rgb), 0.03);
     border-right: 1px solid var(--rule);
     padding: 20px 16px;
     font-family: var(--mono);
@@ -171,7 +169,7 @@ mock:
     <div class="ae-winbtns">─ ▢ ✕</div>
     <div class="ae-wave">
       <svg viewBox="0 0 600 160" preserveAspectRatio="none">
-        <g stroke="#30343F" stroke-width="1" stroke-linecap="round">
+        <g style="stroke: var(--ink)" stroke-width="1" stroke-linecap="round">
           <line x1="10" y1="80" x2="10" y2="80"/>
           <line x1="20" y1="72" x2="20" y2="88"/>
           <line x1="30" y1="60" x2="30" y2="100"/>
@@ -232,7 +230,7 @@ mock:
           <line x1="580" y1="79" x2="580" y2="81"/>
           <line x1="590" y1="80" x2="590" y2="80"/>
         </g>
-        <line x1="0" y1="80" x2="600" y2="80" stroke="rgba(48,52,63,0.16)" stroke-width="0.5"/>
+        <line x1="0" y1="80" x2="600" y2="80" style="stroke: var(--rule-strong)" stroke-width="0.5"/>
       </svg>
       <div class="ae-selection"></div>
       <div class="ae-playhead"></div>
