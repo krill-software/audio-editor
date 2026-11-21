@@ -47,13 +47,6 @@ body {
   flex-direction: column;
 }
 
-/* Subtle aux pane tint — main stays pure Ghost White. */
-#aux {
-  background: rgba(48, 52, 63, 0.03);
-  border-right: 0;
-  padding: 0;
-}
-
 #work {
   flex: 1;
   min-height: 0;
